@@ -1,0 +1,136 @@
+syntax = "proto3";
+
+package api.chatbot.v1alpha1.services;
+
+option go_package = "git.laiye.com/laiye-backend-repos/laiye-chatbot-app/api/v1alpha1;services";
+option java_package = "api.chatbot.v1alpha1.services";
+option java_multiple_files = true;
+option java_outer_classname = "EntityServiceProto";
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service LabelQueryService{
+  rpc CreateLabelQuery(CreateLabelQueryRequest)returns(CreateLabelQueryResponse){
+    option (google.api.http) = {
+      post: "/chatbot/v1alpha1/agents/{agent_id=*}/labelQuery"
+      body: "*"
+    };
+  }
+  rpc MutateLabelQuery(MutateLabelQueryRequest)returns(MutateLabelQueryResponse){
+    option (google.api.http) = {
+      post: "/chatbot/v1alpha1/agents/{agent_id=*}/labelQueries/mutate"
+      body: "*"
+    };
+  }
+  rpc SearchLabelQuery(SearchLabelQueryRequest)returns(SearchLabelQueryResponse){
+    option (google.api.http) = {
+      post: "/chatbot/v1alpha1/agents/{agent_id=*}/labelQueries/search"
+      body: "*"
+    };
+  }
+}
+
+message LabelQuery{
+  message LabelEnum{
+    enum Label{
+      UNSPECIFIED = 0;
+      RELABEL = 8;
+      CORRECT = 1;
+      IN_INTENTS = 2;
+      OUT_INTENTS = 3;
+      UNCLEAR = 4;
+      IGNORE = 5;
+      MISSING = 6;
+      NEW = 7;
+    }
+  }
+  message ConsumptionLabelEnum{
+    enum ConsumptionLabel{
+      UNSPECIFIED = 0;
+      INTENT_ADDED = 1;
+      EXPORTED = 2;
+    }
+  }
+  int64 id = 11;
+  string msg_id = 1;
+  string session_id = 12;
+  string query = 2;
+  string top1_recall = 3;
+  google.protobuf.Timestamp recall_time = 4;
+  int64 target_intent_id = 5;
+  int64 operator_id = 6;
+  repeated string recommended_recalls = 7;
+  LabelEnum.Label label = 8;
+  repeated ConsumptionLabelEnum.ConsumptionLabel consumption_labels = 9;
+  google.protobuf.Timestamp label_time = 10;
+}
+
+message CreateLabelQueryRequest{
+  int64 agent_id = 1;
+  LabelQuery label_query = 2;
+}
+
+message CreateLabelQueryResponse{
+  LabelQuery label_query = 2;
+}
+
+message LabelQueryOperation{
+  google.protobuf.FieldMask update_mask = 4;
+  oneof operation{
+    LabelQuery create = 1;
+    LabelQuery update = 2;
+    int64 add_to_intent = 3;
+    int64 delete = 5;
+  }
+}
+
+message MutateLabelQueryRequest{
+  int64 agent_id = 1;
+  repeated LabelQueryOperation operations = 2;
+}
+
+message MutateLabelQueryResponse{
+  repeated LabelQuery label_queries = 1;
+}
+
+message SearchLabelQueryRequest{
+  message Filter{
+    oneof filter{
+      google.protobuf.Timestamp recall_time_ge = 1;
+      google.protobuf.Timestamp recall_time_be = 2;
+      google.protobuf.Timestamp label_time_ge = 3;
+      google.protobuf.Timestamp label_time_be = 4;
+      float recall_intent_score_ge = 5;
+      float recall_intent_score_be = 6;
+      int64 recommended_intent_score_ge = 7;
+      int64 recommended_intent_score_be = 8;
+      IDs recall_intent_id_in = 9;
+      ConsumptionLabelsIn consumption_labels_in = 12;
+      Labels labels_in = 13;
+      Labels labels_not_in = 14;
+    }
+  }
+  message IDs{
+    repeated int64 ids = 1;
+  }
+  message ConsumptionLabelsIn{
+    repeated LabelQuery.ConsumptionLabelEnum.ConsumptionLabel consumption_labels = 1;
+  }
+  message Labels{
+    repeated LabelQuery.LabelEnum.Label labels = 1;
+  }
+  int64 agent_id = 1;
+  repeated Filter filters = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message SearchLabelQueryResponse{
+  repeated LabelQuery label_queries = 1;
+  int64 total_size = 2;
+}

@@ -1,0 +1,41 @@
+[[source]]
+url = "https://mirrors.aliyun.com/pypi/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pretty-errors = "*"
+"ruamel.yaml" = "*"
+xlrd = "==1.2.0"
+requests = "*"
+pytest = "*"
+pandas = "*"
+openpyxl = "*"
+pyyaml = "*"
+pytest-html = "*"
+loguru = "*"
+python-dotenv = "*"
+tenacity = "*"
+requests-toolbelt = "*"
+grpcio = "*"
+grpcio-tools = "*"
+protobuf = "*"
+googleapis-common-protos = "*"
+protoc-gen-swagger = "*"
+jsonpath = "*"
+pytest-parallel = "*"
+pytest-xdist = "*"
+bs4 = "*"
+beautifulsoup4 = "*"
+lxml = "*"
+pytest-assume = {version = "*", index = "http://pypi.douban.com/simple/"}
+allure-pytest = "*"
+jsonschema = "*"
+pipfile = "*"
+minio = "*"
+shortuuid = "*"
+setuptools = "*"
+[dev-packages]
+
+[requires]
+python_version = "3.9"
